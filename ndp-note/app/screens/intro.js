@@ -1,11 +1,16 @@
-import { View, StyleSheet, Text, TextInput } from 'react-native';
+
+import React from 'react';
+import { View, StyleSheet, Text, TextInput, StatusBar } from 'react-native';
 
 const Intro = () => {
   return (
-    <View style={styles.container}>
-      <Text>Enter Your Name to Continue</Text>
-      <TextInput placeholder="Your Name" />
-    </View>
+    <>
+      <StatusBar hidden />
+      <View style={styles.container}>
+        <Text>Enter Your Name to Continue</Text>
+        <TextInput placeholder="Your Name" />
+      </View>
+    </>
   );
 };
 
@@ -14,6 +19,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff',
   },
 });
 
