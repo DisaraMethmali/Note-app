@@ -1,8 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Intro from './app/screens/intro';
+import { StyleSheet, View } from 'react-native';
+import Intro from './app/screens/intro'; // Ensure the correct path
+import NoteScreen from './app/screens/noteScreen'; // Ensure the correct path
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import NoteInputModal from './app/screens/noteInputModel';
+const Stack = createStackNavigator();
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -12,7 +17,7 @@ export default function App() {
     try {
       const result = await AsyncStorage.getItem('user');
       if (result !== null) {
-        setUser(result);
+        setUser(result); // Assuming result is a plain string
         console.log('User found:', result);
       } else {
         console.log('No user found, please enter your name.');
@@ -25,7 +30,7 @@ export default function App() {
   // Function to save the user to AsyncStorage
   const saveUser = async (name) => {
     try {
-      await AsyncStorage.setItem('user', name);
+      await AsyncStorage.setItem('user', name); // Assuming name is a plain string
       setUser(name); // Update state after saving
       console.log('User name saved:', name);
     } catch (error) {
@@ -37,27 +42,44 @@ export default function App() {
     findUser();
   }, []);
 
-  if (user) {
-    return (
-      <View style={styles.container}>
-        <Text>Welcome back, {user}!</Text>
-        <StatusBar style="auto" />
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        <Intro onSaveUser={saveUser} />
-        <StatusBar style="auto" />
-      </View>
-    );
-  }
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          <Stack.Screen 
+            name="Note" 
+            component={NoteScreen} 
+            initialParams={{ user }}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          <Stack.Screen 
+            name="Intro" 
+            options={{ 
+              headerShown: false 
+            }}
+          >
+            {(props) => <Intro {...props} onSaveUser={saveUser} />}
+          </Stack.Screen>
+        )}
+        <Stack.Screen 
+          name="NoteInputModal" 
+          component={NoteInputModal} 
+          options={{ 
+            presentation: 'modal' 
+          }} 
+        />
+      </Stack.Navigator>
+      <StatusBar style="auto" />
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#fff',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });
